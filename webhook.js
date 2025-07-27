@@ -2,7 +2,7 @@ const express = require('express');
 const axios = require('axios');
 
 const app = express();
-app.use(express.json());
+app.use(express.json({ limit: '50mb' }));
 
 const INSTANCE = 'Pierry';
 const API_KEY = 'A8Nf3ndOnkRl6na0alk81b0G24ddxqkB';
@@ -32,7 +32,7 @@ app.post('/messages-upsert', async (req, res) => {
   try {
     await axios.post(`${BASE_URL}/${INSTANCE}`, {
       number: sender,
-      message: `Você disse: ${message}`
+      text: `Você disse: ${message}`
     }, {
       headers: {
         'Content-Type': 'application/json',
