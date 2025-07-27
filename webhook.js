@@ -4,21 +4,23 @@ const axios = require('axios');
 const app = express();
 app.use(express.json());
 
-// Substitua pela sua chave da Evolution API
-const API_KEY = 'A8Nf3ndOnkRl6na0alk81b0G24ddxqkB';
-const INSTANCE_NAME = 'Pierry';
-const EVOLUTION_URL = 'http://localhost:8080/message/sendText';
+const INSTANCE = 'Pierry';
+const API_KEY = 'A280D3CC7FE6-439A-89B4-5155D09092AF';
+const BASE_URL = `http://qwogo8c4wsgc8cwo0ksgskgg.195.200.6.174.sslip.io:8080/message/sendText`;
 
-app.post('/webhook', async (req, res) => {
-  const { from, body } = req.body;
+app.post('/messages-upsert', async (req, res) => {
+  const data = req.body;
+  const sender = data?.sender?.split('@')[0];
+  const message = data?.data?.message?.conversation;
 
-  console.log(`📩 Nova mensagem de ${from}: ${body}`);
+  console.log(`📩 Mensagem recebida de ${sender}: ${message}`);
+
+  if (!sender || !message) return res.sendStatus(400);
 
   try {
-    // Envia resposta automática
-    await axios.post(`${EVOLUTION_URL}/${INSTANCE_NAME}`, {
-      number: from,
-      message: 'Olá! Esta é uma resposta automática do bot 🤖'
+    await axios.post(`${BASE_URL}/${INSTANCE}`, {
+      number: sender,
+      message: `Você disse: ${message}`
     }, {
       headers: {
         'Content-Type': 'application/json',
@@ -26,15 +28,15 @@ app.post('/webhook', async (req, res) => {
       }
     });
 
-    console.log(`✅ Resposta enviada para ${from}`);
+    console.log(`✅ Resposta enviada para ${sender}`);
     res.sendStatus(200);
   } catch (error) {
-    console.error('Erro ao responder:', error.message);
+    console.error('❌ Erro ao responder:', error.message);
     res.sendStatus(500);
   }
 });
 
 const PORT = process.env.PORT || 3010;
 app.listen(PORT, () => {
-  console.log(`🚀 Webhook rodando na porta ${PORT}`);
+  console.log(`🚀 Webhook escutando na porta ${PORT}`);
 });
