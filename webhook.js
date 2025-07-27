@@ -6,7 +6,7 @@ app.use(express.json());
 
 const INSTANCE = 'Pierry';
 const API_KEY = 'A280D3CC7FE6-439A-89B4-5155D09092AF';
-const BASE_URL = `http://qwogo8c4wsgc8cwo0ksgskgg.195.200.6.174.sslip.io:8080/message/sendText`;
+const BASE_URL = `http://qwogo8c4wsgc8cwo0ksgskgg.195.200.6.174.sslip.io/message/sendText`;
 
 app.post('/messages-upsert', async (req, res) => {
   const data = req.body;
