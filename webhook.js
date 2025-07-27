@@ -12,6 +12,8 @@ app.post('/messages-upsert', async (req, res) => {
   const data = req.body?.data;
   const key = data?.key;
 
+  if (key?.fromMe) return res.sendStatus(200);
+
   // Detecta o número do remetente
   let sender = key?.participant || key?.remoteJid || req.body?.sender;
 
@@ -24,7 +26,8 @@ app.post('/messages-upsert', async (req, res) => {
   sender = sender.replace(/@.*$/, '');
 
   const message = data?.message?.conversation;
-
+  if (message?.toLowerCase() !== 'oi') return res.sendStatus(200);
+  
   console.log(`📩 Mensagem recebida de ${sender}: ${message}`);
 
   if (!sender || !message) return res.sendStatus(400);
