@@ -18,6 +18,10 @@ app.post('/messages-upsert', async (req, res) => {
   if (!sender || !message) return res.sendStatus(400);
 
   try {
+    console.log('📤 Enviando mensagem:', {
+      number: sender,
+      message: `Você disse: ${message}`
+    });
     await axios.post(`${BASE_URL}/${INSTANCE}`, {
       number: sender,
       message: `Você disse: ${message}`
