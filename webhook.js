@@ -9,19 +9,27 @@ const API_KEY = 'A8Nf3ndOnkRl6na0alk81b0G24ddxqkB';
 const BASE_URL = `http://qwogo8c4wsgc8cwo0ksgskgg.195.200.6.174.sslip.io/message/sendText`;
 
 app.post('/messages-upsert', async (req, res) => {
-  const data = req.body;
-  const sender = data?.sender?.split('@')[0];
-  const message = data?.data?.message?.conversation;
+  const data = req.body?.data;
+  const key = data?.key;
+
+  // Detecta o número do remetente
+  let sender = key?.participant || key?.remoteJid || req.body?.sender;
+
+  if (!sender) {
+    console.warn('❌ Não foi possível identificar o número do remetente.');
+    return res.sendStatus(400);
+  }
+
+  // Remove o "@s.whatsapp.net" ou "@g.us" do número
+  sender = sender.replace(/@.*$/, '');
+
+  const message = data?.message?.conversation;
 
   console.log(`📩 Mensagem recebida de ${sender}: ${message}`);
 
   if (!sender || !message) return res.sendStatus(400);
 
   try {
-    console.log('📤 Enviando mensagem:', {
-      number: sender,
-      message: `Você disse: ${message}`
-    });
     await axios.post(`${BASE_URL}/${INSTANCE}`, {
       number: sender,
       message: `Você disse: ${message}`
