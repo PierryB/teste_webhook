@@ -19,6 +19,11 @@ app.post('/messages-upsert', async (req, res) => {
     console.warn('❌ Não foi possível identificar o número do remetente.');
     return res.sendStatus(400);
   }
+  const isGroup = sender.includes('@g.us'); // mensagem de grupo
+    if (isGroup) {
+    console.log(`👥 Ignorando mensagem de grupo`);
+    return res.sendStatus(200);
+  }
   // Remove o "@s.whatsapp.net" ou "@g.us" do número
   sender = sender.replace(/@.*$/, '');
 
