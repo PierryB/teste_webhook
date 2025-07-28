@@ -12,8 +12,6 @@ app.post('/messages-upsert', async (req, res) => {
   const data = req.body?.data;
   const key = data?.key;
 
-  if (key?.fromMe) return res.sendStatus(200);
-
   // Detecta o número do remetente
   let sender = key?.participant || key?.remoteJid || req.body?.sender;
 
@@ -21,12 +19,18 @@ app.post('/messages-upsert', async (req, res) => {
     console.warn('❌ Não foi possível identificar o número do remetente.');
     return res.sendStatus(400);
   }
-
   // Remove o "@s.whatsapp.net" ou "@g.us" do número
   sender = sender.replace(/@.*$/, '');
 
   const message = data?.message?.conversation;
-  if (message?.toLowerCase() !== 'oi') return res.sendStatus(200);
+  //if (message?.toLowerCase() !== 'oi') return res.sendStatus(200);
+
+  // Valida se o bot enviou mensagem para ele mesmo
+  const instanceNumber = '554797606148';
+  if (sender === instanceNumber) {
+    console.log(`🚫 Ignorando mensagem enviada por mim mesmo (${sender})`);
+    return res.sendStatus(200);
+  }
   
   console.log(`📩 Mensagem recebida de ${sender}: ${message}`);
 
