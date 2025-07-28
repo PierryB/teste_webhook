@@ -14,6 +14,7 @@ app.post('/messages-upsert', async (req, res) => {
 
   // Detecta o número do remetente
   let sender = key?.participant || key?.remoteJid || req.body?.sender;
+  console.log(`📦 Número do usuário: ${sender}`);
 
   if (!sender) {
     console.warn('❌ Não foi possível identificar o número do remetente.');
