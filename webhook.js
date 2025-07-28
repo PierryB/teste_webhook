@@ -12,6 +12,21 @@ app.post('/messages-upsert', async (req, res) => {
   const data = req.body?.data;
   const key = data?.key;
 
+  // Valida se o bot enviou mensagem para ele mesmo
+  const isFromMe = key?.fromMe === true;
+  if (isFromMe) {
+    console.log(`🚫 Ignorando mensagem enviada por mim mesmo`);
+    return res.sendStatus(200);
+  }
+
+  // Valida se mensagem é de um grupo
+  const remoteJid = key?.remoteJid || '';
+  const isGroup = remoteJid.endsWith('@g.us');
+    if (isGroup) {
+    console.log(`👥 Ignorando mensagem de grupo`);
+    return res.sendStatus(200);
+  }
+  
   // Detecta o número do remetente
   let sender = key?.participant || key?.remoteJid || req.body?.sender;
   console.log(`📦 Número do usuário: ${sender}`);
@@ -20,23 +35,11 @@ app.post('/messages-upsert', async (req, res) => {
     console.warn('❌ Não foi possível identificar o número do remetente.');
     return res.sendStatus(400);
   }
-  const remoteJid = key?.remoteJid || '';
-  const isGroup = remoteJid.endsWith('@g.us');
-    if (isGroup) {
-    console.log(`👥 Ignorando mensagem de grupo`);
-    return res.sendStatus(200);
-  }
+
   // Remove o "@s.whatsapp.net" ou "@g.us" do número
   sender = sender.replace(/@.*$/, '');
 
   const message = data?.message?.conversation;
-
-  // Valida se o bot enviou mensagem para ele mesmo
-  const isFromMe = key?.fromMe === true;
-  if (isFromMe) {
-    console.log(`🚫 Ignorando mensagem enviada por mim mesmo`);
-    return res.sendStatus(200);
-  }
 
   if (!message || typeof message !== 'string') {
     console.log(`📦 Ignorando mensagem não textual de ${sender}`);
