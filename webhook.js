@@ -20,7 +20,8 @@ app.post('/messages-upsert', async (req, res) => {
     console.warn('❌ Não foi possível identificar o número do remetente.');
     return res.sendStatus(400);
   }
-  const isGroup = sender.includes('@g.us'); // mensagem de grupo
+  const remoteJid = key?.remoteJid || '';
+  const isGroup = remoteJid.endsWith('@g.us');
     if (isGroup) {
     console.log(`👥 Ignorando mensagem de grupo`);
     return res.sendStatus(200);
@@ -29,12 +30,11 @@ app.post('/messages-upsert', async (req, res) => {
   sender = sender.replace(/@.*$/, '');
 
   const message = data?.message?.conversation;
-  //if (message?.toLowerCase() !== 'oi') return res.sendStatus(200);
 
   // Valida se o bot enviou mensagem para ele mesmo
-  const instanceNumber = '554797606148';
-  if (sender === instanceNumber) {
-    console.log(`🚫 Ignorando mensagem enviada por mim mesmo (${sender})`);
+  const isFromMe = key?.fromMe === true;
+  if (isFromMe) {
+    console.log(`🚫 Ignorando mensagem enviada por mim mesmo`);
     return res.sendStatus(200);
   }
 
