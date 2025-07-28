@@ -31,6 +31,11 @@ app.post('/messages-upsert', async (req, res) => {
     console.log(`🚫 Ignorando mensagem enviada por mim mesmo (${sender})`);
     return res.sendStatus(200);
   }
+
+  if (!message || typeof message !== 'string') {
+    console.log(`📦 Ignorando mensagem não textual de ${sender}`);
+    return res.sendStatus(200);
+  }
   
   console.log(`📩 Mensagem recebida de ${sender}: ${message}`);
 
