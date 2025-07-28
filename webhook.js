@@ -1,12 +1,13 @@
 const express = require('express');
 const axios = require('axios');
+require('dotenv').config();
 
 const app = express();
-app.use(express.json({ limit: '50mb' }));
+app.use(express.json({ limit: '10mb' }));
 
-const INSTANCE = 'Pierry';
-const API_KEY = 'A8Nf3ndOnkRl6na0alk81b0G24ddxqkB';
-const BASE_URL = `http://qwogo8c4wsgc8cwo0ksgskgg.195.200.6.174.sslip.io/message/sendText`;
+const INSTANCE = process.env.INSTANCE_NAME;
+const API_KEY = process.env.API_KEY;
+const BASE_URL = `${process.env.EVOLUTION_URL}/message/sendText`;
 
 app.post('/messages-upsert', async (req, res) => {
   const data = req.body?.data;
@@ -42,7 +43,7 @@ app.post('/messages-upsert', async (req, res) => {
   const message = data?.message?.conversation;
 
   if (!message || typeof message !== 'string') {
-    console.log(`📦 Ignorando mensagem não textual de ${sender}`);
+    console.log(`🚫 Ignorando mensagem não textual de ${sender}`);
     return res.sendStatus(200);
   }
   
